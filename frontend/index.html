@@ -4,33 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foodify - Login/Signup</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Firebase SDK (Compat Versions) -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="container">
-        <header>
+<body class="bg-light">
+    <div class="container mt-5">
+        <header class="text-center mb-4">
             <h1>Welcome to Foodify</h1>
             <p>Your favorite food delivered fast!</p>
         </header>
         <main>
-            <div class="form-container">
+            <div class="form-container mx-auto p-4 shadow-sm bg-white rounded" style="max-width: 400px;">
                 <form id="login-form">
-                    <h2>Login</h2>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <h2 class="text-center mb-3">Login</h2>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
                     </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
                     </div>
-                    <button type="submit" class="btn">Login</button>
+                    <!-- Success/Error Message -->
+                    <p id="message" class="text-center mt-2"></p>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
                 </form>
-
-                <p>Don't have an account? <a href="signup.html" id="signup-link">Sign up here</a></p>
-
+                <p class="text-center mt-3">Don't have an account? <a href="signup.html" id="signup-link">Sign up here</a></p>
             </div>
         </main>
     </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIMi_uFxjXgcFtSpcx3QJjtWFHVGmOlHw",
+            authDomain: "foodify-f0dc3.firebaseapp.com",
+            projectId: "foodify-f0dc3",
+            storageBucket: "foodify-f0dc3.appspot.com",
+            messagingSenderId: "58325112653",
+            appId: "1:58325112653:web:29db036a4ab62bb0188904",
+            measurementId: "G-GL3MD09KR8"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Handle login form submission
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent default form submission
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const message = document.getElementById('message');
+
+            // Clear any previous message
+            message.textContent = "";
+            message.className = ""; // Reset classes
+
+            // Authenticate with Firebase
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Authentication successful
+                    message.textContent = "Login Successful! Redirecting...";
+                    message.className = "text-success text-center"; // Green text for success
+                    setTimeout(() => {
+                        window.location.href = "welcome.html"; // Redirect after 2 seconds
+                    }, 2000);
+                })
+                .catch((error) => {
+                    // Authentication failed, show error message
+                    const errorCode = error.code;
+                    const errorMsg = error.message;
+                    message.textContent = `Error: ${errorMsg}`;
+                    message.className = "text-danger text-center"; // Red text for error
+                });
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
