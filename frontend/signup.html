@@ -4,31 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foodify - Sign Up</title>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="signup-container">
-        <h2>What's your phone number or email?</h2>
+        <h2>Sign up with your email</h2>
         <form id="signup-form">
             <div class="form-group">
-                <input type="text" id="phone-email" name="phone-email" placeholder="Enter phone number or email" required>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
             </div>
-            <button type="button" class="btn primary-btn" onclick="location.href='verify.html';">Continue</button>
-
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="button" id="signup-btn" class="btn primary-btn">Sign Up</button>
         </form>
         <div class="divider">
             <span>or</span>
         </div>
         <div class="auth-buttons">
-            <button class="btn google-btn">
+            <button id="google-signup" class="btn google-btn">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" class="icon">
-                Continue with Google
+                Sign Up with Google
             </button>
-            <button class="btn apple-btn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Logo" class="icon">
-                Continue with Apple
-            </button>
+            
         </div>
     </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIMi_uFxjXgcFtSpcx3QJjtWFHVGmOlHw",
+            authDomain: "foodify-f0dc3.firebaseapp.com",
+            projectId: "foodify-f0dc3",
+            storageBucket: "foodify-f0dc3.appspot.com",
+            messagingSenderId: "58325112653",
+            appId: "1:58325112653:web:29db036a4ab62bb0188904",
+            measurementId: "G-GL3MD09KR8"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Handle email sign-up
+        document.getElementById('signup-btn').addEventListener('click', () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    user.sendEmailVerification().then(() => {
+                        alert('Verification email sent. Please check your inbox.');
+                        window.location.href = 'collect-details.html';
+                    });
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                });
+        });
+
+        // Google Sign-In
+        document.getElementById('google-signup').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(() => {
+                    window.location.href = 'collect-details.html'; // Redirect after successful sign-in
+                })
+                .catch((error) => {
+                    alert(`Error: ${error.message}`);
+                });
+        });
+
+     
+    </script>
 </body>
 </html>

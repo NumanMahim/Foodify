@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodify - Complete Signup</title>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="collect-details.css">
+</head>
+<body>
+    <div class="details-container">
+        <div class="header">
+            <h1>Welcome to Foodify!</h1>
+            <p>Let’s set up your profile to provide you with the best experience.</p>
+        </div>
+        <form id="details-form" class="form">
+            <div class="form-group">
+                <label for="first-name">First Name</label>
+                <input type="text" id="first-name" placeholder="Enter your first name" required>
+            </div>
+            <div class="form-group">
+                <label for="last-name">Last Name</label>
+                <input type="text" id="last-name" placeholder="Enter your last name" required>
+            </div>
+            <div class="form-group">
+                <label for="phone-number">Phone Number</label>
+                <input type="tel" id="phone-number" placeholder="Enter your phone number" required>
+            </div>
+            <div class="form-group">
+                <label for="postcode">Postcode</label>
+                <input type="text" id="postcode" placeholder="Enter your postcode" required>
+                <button type="button" id="fetch-addresses" class="btn secondary-btn">Find Addresses</button>
+            </div>
+            <div class="form-group" id="address-popup" style="display: none;">
+                <label for="address-select">Select an Address</label>
+                <select id="address-select"></select>
+            </div>
+            <div class="form-group">
+                <label for="full-address">Full Address</label>
+                <input type="text" id="full-address" placeholder="Selected address will appear here" readonly required>
+            </div>
+            <button type="submit" class="btn primary-btn">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIMi_uFxjXgcFtSpcx3QJjtWFHVGmOlHw",
+            authDomain: "foodify-f0dc3.firebaseapp.com",
+            projectId: "foodify-f0dc3",
+            storageBucket: "foodify-f0dc3.appspot.com",
+            messagingSenderId: "58325112653",
+            appId: "1:58325112653:web:29db036a4ab62bb0188904",
+            measurementId: "G-GL3MD09KR8"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Fetch addresses for the given postcode using EasyPostcodes API
+        document.getElementById('fetch-addresses').addEventListener('click', async () => {
+            const postcode = document.getElementById('postcode').value.trim();
+            if (!postcode) {
+                alert('Please enter a postcode.');
+                return;
+            }
+
+            try {
+                const apiKey = "QLjLVYZz1nt0c18vuvKSvU9Ifku87YIPtWrpEPcOk"; // Replace with your EasyPostcodes API key
+                const response = await fetch(`https://api.easypostcodes.com/addresses/${postcode}`, {
+                    headers: {
+                        Key: apiKey
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    const addressPopup = document.getElementById('address-popup');
+                    const addressSelect = document.getElementById('address-select');
+                    addressSelect.innerHTML = ''; // Clear previous options
+
+                    // Populate dropdown with addresses
+                    data.forEach((address) => {
+                        const formattedAddress = `${address.buildingNumber || ''} ${address.thoroughfareAndDescriptor}, ${address.postTown}, ${address.postCode}`;
+                        const option = document.createElement('option');
+                        option.value = formattedAddress;
+                        option.textContent = formattedAddress;
+                        addressSelect.appendChild(option);
+                    });
+
+                    addressPopup.style.display = 'block'; // Show address dropdown
+
+                    // Autofill address field on selection
+                    addressSelect.addEventListener('change', () => {
+                        const selectedAddress = addressSelect.value;
+                        document.getElementById('full-address').value = selectedAddress;
+                    });
+                } else {
+                    alert('No addresses found for the entered postcode.');
+                }
+            } catch (error) {
+                alert('Error fetching addresses: ' + error.message);
+            }
+        });
+
+        // Submit form and save user data to Firebase
+        document.getElementById('details-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const firstName = document.getElementById('first-name').value.trim();
+            const lastName = document.getElementById('last-name').value.trim();
+            const phoneNumber = document.getElementById('phone-number').value.trim();
+            const fullAddress = document.getElementById('full-address').value.trim();
+
+            if (!fullAddress) {
+                alert('Please select a valid address.');
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                alert('No authenticated user found!');
+                return;
+            }
+
+            // Store user details in Firestore
+            db.collection('users').doc(user.uid).set({
+                firstName,
+                lastName,
+                phoneNumber,
+                address: fullAddress,
+                email: user.email
+            }).then(() => {
+                alert('Profile completed successfully!');
+                window.location.href = 'welcome.html'; // Redirect to a welcome page
+            }).catch((error) => {
+                alert(`Error storing user details: ${error.message}`);
+            });
+        });
+    </script>
+</body>
+</html>
