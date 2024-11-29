@@ -17,13 +17,17 @@ header {
     font-weight: bold;
 }
 
-/* Menu Section */
+/* Add space between header and menu section */
 #menu {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    padding: 20px;
+    padding: 40px 20px; /* Add extra padding at the top */
+}
+
+/* Menu List */
+#menu-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three items per row */
+    gap: 20px; /* Space between items */
+    justify-items: center; /* Center items in each column */
 }
 
 /* Individual Menu Card */
@@ -34,8 +38,6 @@ header {
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: white;
-    display: flex;
-    flex-direction: row;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -46,45 +48,47 @@ header {
 
 /* Menu Image */
 .menu-image {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 150px;
     object-fit: cover;
-    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
 /* Menu Info */
 .menu-info {
-    padding: 10px;
-    flex: 1;
+    padding: 15px;
+    text-align: center;
 }
 
 .menu-info h3 {
     margin: 0;
-    font-size: 16px;
+    font-size: 18px;
     color: #333;
+    font-weight: bold;
 }
 
 .menu-info .price {
     margin: 10px 0;
-    font-size: 14px;
+    font-size: 16px;
     color: #ff5722;
     font-weight: bold;
 }
 
 .menu-info .rating {
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
     display: flex;
+    justify-content: center;
     align-items: center;
+    gap: 5px;
 }
 
 .menu-info .rating i {
-    margin-right: 5px;
     color: #ffa500;
 }
 
 .menu-info .description {
     margin-top: 10px;
-    font-size: 12px;
+    font-size: 14px;
     color: #777;
 }
