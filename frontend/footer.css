@@ -1,0 +1,122 @@
+/* Footer Styling */
+.footer {
+    background-color: #1c1c1c;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 30px 20px;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+/* Footer Sections */
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.logo-section .footer-logo {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #ff5722;
+    margin-bottom: 10px;
+}
+
+.logo-section p {
+    font-size: 0.9em;
+    color: #d3d3d3;
+}
+
+.contact-section h3,
+.links-section h3,
+.follow-section h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.contact-section ul,
+.links-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-section ul li,
+.links-section ul li {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    color: #d3d3d3;
+}
+
+.contact-section ul li i,
+.links-section ul li i {
+    margin-right: 10px;
+    color: #ff5722;
+}
+
+.links-section ul li a {
+    text-decoration: none;
+    color: #d3d3d3;
+    transition: color 0.3s ease;
+}
+
+.links-section ul li a:hover {
+    color: #ff5722;
+}
+
+/* Social Icons */
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.social-icons a {
+    color: #ffffff;
+    font-size: 1.2em;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #ff5722;
+}
+
+/* Bottom Bar */
+.footer-bottom {
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer-bottom p {
+    font-size: 0.8em;
+    color: #d3d3d3;
+    margin: 0;
+}
+
+.footer-bottom-links a {
+    font-size: 0.8em;
+    text-decoration: none;
+    color: #d3d3d3;
+    margin-left: 15px;
+    transition: color 0.3s ease;
+}
+
+.footer-bottom-links a:hover {
+    color: #ff5722;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Data Test</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <h1>Firebase Data Test</h1>
+    <p id="username">Name: Loading...</p>
+    <p id="location">Location: Loading...</p>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIMi_uFxjXgcFtSpcx3QJjtWFHVGmOlHw",
+            authDomain: "foodify-f0dc3.firebaseapp.com",
+            projectId: "foodify-f0dc3",
+            storageBucket: "foodify-f0dc3.appspot.com",
+            messagingSenderId: "58325112653",
+            appId: "1:58325112653:web:29db036a4ab62bb0188904",
+            measurementId: "G-GL3MD09KR8"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Listen for Authentication State Changes
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                console.log("User is logged in:", user.uid);
+                fetchUserData(user.uid); // Fetch data for the logged-in user
+            } else {
+                console.error("No user is logged in.");
+            }
+        });
+
+        // Fetch user data
+        function fetchUserData(uid) {
+            console.log("Fetching data for user:", uid);
+            db.collection("users").doc(uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        console.log("Document data:", doc.data());
+                        const data = doc.data();
+                        document.getElementById('username').innerText = `Name: ${data.firstName}`;
+                        document.getElementById('location').innerText = `Location: ${data.address}`;
+                    } else {
+                        console.error("No such document!");
+                        document.getElementById('username').innerText = "Name: Not found";
+                        document.getElementById('location').innerText = "Location: Not found";
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+        }
+    </script>
+</body>
+</html>

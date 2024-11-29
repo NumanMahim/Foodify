@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodify - Home</title>
+    <link rel="stylesheet" href="homepage.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header"></header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 id="username">Name: Loading...</h1>
+        <p id="location">Location: Loading...</p>
+
+        <!-- Restaurants Section -->
+        <section id="restaurants">
+            <h2>Restaurants</h2>
+            <div id="restaurant-list">
+                Loading restaurants...
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer"></footer>
+
+    <!-- JavaScript to Load Header and Footer -->
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIMi_uFxjXgcFtSpcx3QJjtWFHVGmOlHw",
+            authDomain: "foodify-f0dc3.firebaseapp.com",
+            projectId: "foodify-f0dc3",
+            storageBucket: "foodify-f0dc3.appspot.com",
+            messagingSenderId: "58325112653",
+            appId: "1:58325112653:web:29db036a4ab62bb0188904",
+            measurementId: "G-GL3MD09KR8"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Fetch User Data
+        function fetchUserData(uid) {
+            console.log("Fetching data for user:", uid);
+            db.collection("users").doc(uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+
+                        // Update name and location in the middle of the page
+                        document.getElementById('username').innerText = `Name: ${data.firstName}`;
+                        document.getElementById('location').innerText = `Location: ${data.address}`;
+
+                        // Update name and location in the header
+                        const headerName = document.getElementById('user-name');
+                        const headerLocation = document.getElementById('location-text');
+                        if (headerName) headerName.innerText = data.firstName;
+                        if (headerLocation) headerLocation.innerText = data.address;
+                    } else {
+                        console.error("No such document!");
+                        document.getElementById('username').innerText = "Name: Not found";
+                        document.getElementById('location').innerText = "Location: Not found";
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+        }
+
+        // Listen for Authentication State Changes
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                console.log("User is logged in:", user.uid);
+                fetchUserData(user.uid);
+            } else {
+                console.error("No user is logged in.");
+            }
+        });
+
+        // Load Header
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header').innerHTML = data;
+            });
+
+        // Load Footer
+        fetch('footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer').innerHTML = data;
+            });
+
+        // Wyre Data API Integration
+        const wyreApiKey = 'b0cb75d626msh4cbf53b562aaf77p1c14f1jsnc94670909afd';
+        const wyreApiUrl = 'https://wyre-data.p.rapidapi.com/get/6399f64671c0238ae6e76eed';
+
+        function fetchRestaurants() {
+            fetch(wyreApiUrl, {
+                method: 'GET',
+                headers: {
+                    'x-rapidapi-host': 'wyre-data.p.rapidapi.com',
+                    'x-rapidapi-key': wyreApiKey,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const restaurantList = document.getElementById('restaurant-list');
+                    restaurantList.innerHTML = '';
+
+                    if (data && data.length > 0) {
+                        data.forEach(restaurant => {
+                            const restaurantDiv = document.createElement('div');
+                            restaurantDiv.className = 'restaurant-card';
+                            restaurantDiv.innerHTML = `
+                                <h3>${restaurant.name}</h3>
+                                <p>${restaurant.address}</p>
+                                <p>Rating: ${restaurant.rating || 'N/A'}</p>
+                            `;
+                            restaurantList.appendChild(restaurantDiv);
+                        });
+                    } else {
+                        restaurantList.innerHTML = 'No restaurants found.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching restaurants:', error);
+                    document.getElementById('restaurant-list').innerText = 'Error loading restaurants.';
+                });
+        }
+
+        // Fetch restaurants on page load
+        fetchRestaurants();
+    </script>
+</body>
+</html>
