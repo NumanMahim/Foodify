@@ -14,16 +14,21 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Wyre Data API Integration (Optional)
+const wyreApiKey = 'b0cb75d626msh4cbf53b562aaf77p1c14f1jsnc94670909afd';
+const wyreApiUrl = 'https://wyre-data.p.rapidapi.com/get/6399f64671c0238ae6e76eed';
+
 // Fetch User Data
 function fetchUserData(uid) {
+    console.log("Fetching data for user:", uid);
     db.collection("users").doc(uid).get()
         .then((doc) => {
             if (doc.exists) {
                 const data = doc.data();
                 const headerName = document.getElementById('user-name');
                 const headerLocation = document.getElementById('location-text');
-                if (headerName) headerName.innerText = data.firstName;
-                if (headerLocation) headerLocation.innerText = data.address;
+                if (headerName) headerName.innerText = data.firstName || 'Guest';
+                if (headerLocation) headerLocation.innerText = data.address || 'Unknown Location';
             } else {
                 console.error("No such user document!");
             }
@@ -36,6 +41,7 @@ function fetchUserData(uid) {
 // Listen for Authentication State Changes
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
+        console.log("User is logged in:", user.uid);
         fetchUserData(user.uid);
     } else {
         console.error("No user is logged in.");
@@ -47,6 +53,13 @@ fetch('header.html')
     .then(response => response.text())
     .then(data => {
         document.getElementById('header').innerHTML = data;
+
+        // Fetch user data after header is loaded
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                fetchUserData(user.uid);
+            }
+        });
     });
 
 fetch('footer.html')
@@ -55,7 +68,7 @@ fetch('footer.html')
         document.getElementById('footer').innerHTML = data;
     });
 
-// Load Restaurants
+// Fetch Restaurants from Firebase
 function loadRestaurants() {
     const restaurantList = document.getElementById('restaurant-list');
     if (!restaurantList) {
@@ -93,6 +106,41 @@ function loadRestaurants() {
         .catch(error => {
             console.error('Error fetching restaurants:', error);
             restaurantList.innerHTML = '<p>Error loading restaurants.</p>';
+        });
+}
+
+// Optional: Fetch Restaurants using Wyre API
+function fetchRestaurantsFromAPI() {
+    fetch(wyreApiUrl, {
+        method: 'GET',
+        headers: {
+            'x-rapidapi-host': 'wyre-data.p.rapidapi.com',
+            'x-rapidapi-key': wyreApiKey,
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const restaurantList = document.getElementById('restaurant-list');
+            restaurantList.innerHTML = '';
+
+            if (data && data.length > 0) {
+                data.forEach(restaurant => {
+                    const restaurantDiv = document.createElement('div');
+                    restaurantDiv.className = 'restaurant-card';
+                    restaurantDiv.innerHTML = `
+                        <h3>${restaurant.name}</h3>
+                        <p>${restaurant.address}</p>
+                        <p>Rating: ${restaurant.rating || 'N/A'}</p>
+                    `;
+                    restaurantList.appendChild(restaurantDiv);
+                });
+            } else {
+                restaurantList.innerHTML = 'No restaurants found.';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching restaurants:', error);
+            document.getElementById('restaurant-list').innerText = 'Error loading restaurants.';
         });
 }
 

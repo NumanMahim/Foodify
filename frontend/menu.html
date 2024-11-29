@@ -5,21 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
     <link rel="stylesheet" href="menu.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Menu</h1>
-    </header>
-    <main>
-        <section id="menu">
-            <div id="menu-list">
-                Loading menu...
-            </div>
-        </section>
+    <!-- Header -->
+    <header id="header"></header>
+
+    <!-- Menu Section -->
+    <main id="menu">
+        <div id="menu-list">
+            Loading menu...
+        </div>
     </main>
+
+    <!-- Footer -->
+    <footer id="footer"></footer>
+
+    <script>
+        // Load Header and Footer
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header').innerHTML = data;
+            });
+
+        fetch('footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer').innerHTML = data;
+            });
+    </script>
     <script src="menu.js"></script>
 </body>
 </html>

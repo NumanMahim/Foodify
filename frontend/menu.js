@@ -17,53 +17,46 @@ const db = firebase.firestore();
 const params = new URLSearchParams(window.location.search);
 const restaurantId = params.get('restaurantId');
 
-console.log('Restaurant ID from URL:', restaurantId);
-
-// Fetch Menu Items for the Restaurant
+// Fetch Menu Items
 function fetchMenu() {
     const menuList = document.getElementById('menu-list');
-    menuList.innerHTML = 'Loading menu...';
-
-    // Validate restaurantId
-    if (!restaurantId) {
-        menuList.innerHTML = 'Invalid restaurant ID.';
-        console.error('Invalid restaurant ID.');
+    if (!menuList) {
+        console.error("Menu list element not found.");
         return;
     }
 
-    // Fetch menu items
-    db.collection('restaurants')
-        .doc(restaurantId)
-        .collection('menu')
-        .get()
-        .then((querySnapshot) => {
+    db.collection('restaurants').doc(restaurantId).collection('menu').get()
+        .then(querySnapshot => {
             menuList.innerHTML = ''; // Clear loading text
-
             if (querySnapshot.empty) {
-                menuList.innerHTML = 'No menu items found.';
+                menuList.innerHTML = '<p>No menu items found.</p>';
                 return;
             }
 
-            querySnapshot.forEach((doc) => {
+            querySnapshot.forEach(doc => {
                 const menuItem = doc.data();
-
-                // Create Menu Item Card
                 const menuCard = document.createElement('div');
                 menuCard.className = 'menu-card';
                 menuCard.innerHTML = `
-                    <h3>${menuItem.name}</h3>
-                    <p>${menuItem.description}</p>
-                    <p>Price: $${menuItem.price}</p>
+                    <img src="${menuItem.image || 'placeholder.jpg'}" alt="${menuItem.name}" class="menu-image">
+                    <div class="menu-info">
+                        <h3>${menuItem.name}</h3>
+                        <p class="price">£${menuItem.price}</p>
+                        <p class="rating">
+                            <i class="fas fa-thumbs-up"></i>
+                            ${menuItem.rating ? `${menuItem.rating}% (${menuItem.reviews || '0'})` : 'No reviews'}
+                        </p>
+                        <p class="description">${menuItem.description || 'No description available.'}</p>
+                    </div>
                 `;
-
                 menuList.appendChild(menuCard);
             });
         })
-        .catch((error) => {
+        .catch(error => {
             console.error('Error fetching menu:', error);
-            menuList.innerHTML = 'Error loading menu.';
+            menuList.innerHTML = '<p>Error loading menu.</p>';
         });
 }
 
-// Fetch menu on page load
+// Fetch menu items on page load
 fetchMenu();
