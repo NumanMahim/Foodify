@@ -19,19 +19,42 @@
             <button><i class="fas fa-search"></i></button>
         </div>
         <div class="icons">
-            <div class="icon">
+            <button class="icon">
                 <i class="fas fa-wallet"></i>
                 <span>Wallet</span>
-            </div>
-            <div class="icon">
+            </button>
+            <button class="icon">
                 <i class="fas fa-shopping-cart"></i>
                 <span>Cart</span>
-            </div>
-            <div class="icon icon-user">
+            </button>
+            <button class="icon icon-user">
                 <i class="fas fa-user-circle"></i>
                 <span id="user-name">User</span> <!-- Updated with id -->
-            </div>
+            </button>
         </div>
     </header>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("Testing buttons");
+    
+            const buttons = document.querySelectorAll(".icon");
+    
+            if (buttons.length === 0) {
+                console.error("No buttons found!");
+                return;
+            }
+    
+            console.log(`Found ${buttons.length} buttons`);
+    
+            buttons.forEach((button, index) => {
+                button.addEventListener("click", () => {
+                    alert(`Button ${index + 1} clicked!`);
+                    console.log(`Button ${index + 1} clicked!`);
+                });
+            });
+        });
+    </script>
+    
+    <script src="header.js"></script>
 </body>
 </html>

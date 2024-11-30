@@ -18,48 +18,11 @@ const db = firebase.firestore();
 const wyreApiKey = 'b0cb75d626msh4cbf53b562aaf77p1c14f1jsnc94670909afd';
 const wyreApiUrl = 'https://wyre-data.p.rapidapi.com/get/6399f64671c0238ae6e76eed';
 
-// Fetch User Data
-function fetchUserData(uid) {
-    console.log("Fetching data for user:", uid);
-    db.collection("users").doc(uid).get()
-        .then((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                const headerName = document.getElementById('user-name');
-                const headerLocation = document.getElementById('location-text');
-                if (headerName) headerName.innerText = data.firstName || 'Guest';
-                if (headerLocation) headerLocation.innerText = data.address || 'Unknown Location';
-            } else {
-                console.error("No such user document!");
-            }
-        })
-        .catch((error) => {
-            console.error("Error fetching user data:", error);
-        });
-}
-
-// Listen for Authentication State Changes
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        console.log("User is logged in:", user.uid);
-        fetchUserData(user.uid);
-    } else {
-        console.error("No user is logged in.");
-    }
-});
-
 // Load Header and Footer
 fetch('header.html')
     .then(response => response.text())
     .then(data => {
         document.getElementById('header').innerHTML = data;
-
-        // Fetch user data after header is loaded
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                fetchUserData(user.uid);
-            }
-        });
     });
 
 fetch('footer.html')

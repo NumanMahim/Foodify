@@ -38,6 +38,9 @@ function fetchMenu() {
                 const menuCard = document.createElement('div');
                 menuCard.className = 'menu-card';
                 menuCard.innerHTML = `
+                    <div class="menu-plus-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
                     <img src="${menuItem.image || 'placeholder.jpg'}" alt="${menuItem.name}" class="menu-image">
                     <div class="menu-info">
                         <h3>${menuItem.name}</h3>
@@ -60,3 +63,14 @@ function fetchMenu() {
 
 // Fetch menu items on page load
 fetchMenu();
+fetch('header.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('header').innerHTML = data;
+    });
+
+fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
