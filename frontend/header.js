@@ -45,3 +45,6 @@ function updateHeader(username, location) {
         console.error("Location text span element not found.");
     }
 }
+
+
+

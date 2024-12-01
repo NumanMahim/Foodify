@@ -7,10 +7,6 @@ body {
     color: #333;
 }
 
-
-
-
-
 #menu {
     padding: 40px 20px; /* Add extra padding at the top */
     margin-top: 80px;
@@ -26,7 +22,7 @@ body {
 
 /* Individual Menu Card */
 .menu-card {
-    position: relative; /* Required for the plus icon */
+    position: relative; /* Required for positioning the button */
     width: 300px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -88,25 +84,23 @@ body {
     color: #777;
 }
 
-/* Plus Icon Styles */
-.menu-plus-icon {
+/* Add To Cart Button */
+.add-to-cart-button {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #ff5722;
+    background-color: #333;
     color: white;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    font-size: 16px;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.menu-plus-icon:hover {
-    transform: scale(1.1);
+.add-to-cart-button:hover {
+    background-color: #555;
+    transform: scale(1.05);
 }

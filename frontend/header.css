@@ -82,6 +82,7 @@ body {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
+    position: relative; /* Make the icon relative for absolute positioning of the badge */
 }
 
 .icon i {
@@ -91,6 +92,23 @@ body {
 
 .icon span {
     font-size: 0.8em;
+}
+
+/* Cart Badge Styling */
+#cart-count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: green;
+    color: white;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Responsive Adjustments */
