@@ -110,9 +110,14 @@ function fetchMenu() {
 // Add event listener for "Add to Cart" button clicks
 document.addEventListener("click", (event) => {
     if (event.target.classList.contains("add-to-cart-button") && authenticatedUserId) {
-        const menuItemId = event.target.dataset.id;
-        const menuItemName = event.target.dataset.name;
-        const menuItemPrice = parseFloat(event.target.dataset.price);
+        const button = event.target;
+        const menuItemId = button.dataset.id;
+        const menuItemName = button.dataset.name;
+        const menuItemPrice = parseFloat(button.dataset.price);
+
+        // Show loading spinner on button
+        button.innerHTML = `<div class="spinner"></div>`;
+        button.disabled = true;
 
         // Add item to the user's cart in Firebase
         const userCartRef = db.collection('carts').doc(authenticatedUserId);
@@ -138,13 +143,42 @@ document.addEventListener("click", (event) => {
 
             // Update cart in Firebase
             userCartRef.set({ items: cartItems })
-                .then(() => console.log("Cart updated successfully"))
-                .catch(error => console.error("Error updating cart:", error));
-        }).catch(error => console.error("Error fetching cart:", error));
+                .then(() => {
+                    console.log("Cart updated successfully");
+
+                    // Show green tick after spinner
+                    setTimeout(() => {
+                        button.innerHTML = `<i class="fas fa-check green-check"></i>`;
+                        
+                        // Restore button after showing green tick
+                        setTimeout(() => {
+                            button.innerHTML = "Add To Cart";
+                            button.disabled = false;
+
+                            // Refresh cart display
+                            fetchCartFromFirebase(authenticatedUserId);
+                        }, 500); // 0.5 second for green tick
+                    }, 500); // 0.5 second for spinner
+                })
+                .catch(error => {
+                    console.error("Error updating cart:", error);
+
+                    // Reset button on error
+                    button.innerHTML = "Add To Cart";
+                    button.disabled = false;
+                });
+        }).catch(error => {
+            console.error("Error fetching cart:", error);
+
+            // Reset button on error
+            button.innerHTML = "Add To Cart";
+            button.disabled = false;
+        });
     } else if (!authenticatedUserId) {
         console.error("User is not authenticated. Cannot add to cart.");
     }
 });
+
 
 // Fetch Cart from Firebase
 function fetchCartFromFirebase(uid) {

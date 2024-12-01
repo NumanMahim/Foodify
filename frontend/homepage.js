@@ -19,17 +19,7 @@ const wyreApiKey = 'b0cb75d626msh4cbf53b562aaf77p1c14f1jsnc94670909afd';
 const wyreApiUrl = 'https://wyre-data.p.rapidapi.com/get/6399f64671c0238ae6e76eed';
 
 // Load Header and Footer
-fetch('header.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('header').innerHTML = data;
-    });
 
-fetch('footer.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('footer').innerHTML = data;
-    });
 
 // Fetch Restaurants from Firebase
 function loadRestaurants() {
@@ -107,5 +97,89 @@ function fetchRestaurantsFromAPI() {
         });
 }
 
+// Cart Functionality
+
+let authenticatedUserId = null;
+
+// Authentication State Listener
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        authenticatedUserId = user.uid;
+        console.log("User is logged in:", user.uid);
+
+        // Fetch cart for the authenticated user
+        fetchCartFromFirebase(user.uid);
+    } else {
+        console.error("No user is logged in.");
+    }
+});
+
+// Function to Fetch Cart from Firebase
+function fetchCartFromFirebase(uid) {
+    const cartItemsContainer = document.querySelector(".cart-items");
+    const cartFooter = document.querySelector(".cart-footer");
+
+    if (!cartItemsContainer || !cartFooter) {
+        console.error("Cart elements not found.");
+        return;
+    }
+
+    const userCartRef = db.collection('carts').doc(uid);
+
+    userCartRef.get().then((doc) => {
+        if (doc.exists) {
+            const cartItems = doc.data().items || [];
+            cartItemsContainer.innerHTML = ''; // Clear existing cart items
+
+            let total = 0;
+            cartItems.forEach((item) => {
+                const cartItem = document.createElement("div");
+                cartItem.className = "cart-item";
+                cartItem.innerHTML = `
+                    <p>${item.name}</p>
+                    <p>Quantity: ${item.quantity}</p>
+                    <p>£${(item.price * item.quantity).toFixed(2)}</p>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+                total += item.price * item.quantity;
+            });
+
+            // Update total in cart footer
+            cartFooter.querySelector("p").textContent = `Total: £${total.toFixed(2)}`;
+        } else {
+            console.log("No cart data found for user.");
+            cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+            cartFooter.querySelector("p").textContent = "Total: £0.00";
+        }
+    }).catch((error) => {
+        console.error("Error fetching cart:", error);
+        cartItemsContainer.innerHTML = "<p>Error loading cart.</p>";
+        cartFooter.querySelector("p").textContent = "Total: £0.00";
+    });
+}
+
+// Toggle Cart Popup
+function toggleCart() {
+    const cartPopup = document.getElementById('cart-popup');
+    cartPopup.style.display = (cartPopup.style.display === 'none' || cartPopup.style.display === '') ? 'block' : 'none';
+
+    if (firebase.auth().currentUser) {
+        fetchCartFromFirebase(firebase.auth().currentUser.uid);
+    } else {
+        console.error("No user is logged in. Cannot fetch cart.");
+    }
+}
+
 // Call the function to load restaurants
 loadRestaurants();
+fetch('header.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('header').innerHTML = data;
+    });
+
+fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });

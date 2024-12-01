@@ -1,16 +1,28 @@
 <div id="cart-popup" class="cart-popup" style="display: none;">
     <style>
+        /* Dim Background */
+        .dim-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 999; /* Below cart but above everything else */
+        }
+
+        /* Cart Popup */
         .cart-popup {
             position: fixed;
             top: 70px; /* Adjusted top value to place it below the header */
             right: 0;
-            height: calc(100% - 60px); /* Adjust height to fit within the visible area */
+            height: calc(100% - 70px); /* Adjust height to fit within the visible area */
             width: 30%;
             background-color: #fff;
             box-shadow: -4px 0px 10px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
+            z-index: 1000; /* Ensure it's above dim background */
             padding: 16px;
-            overflow-y: auto;
+            overflow-y: auto; /* Enable scrolling for cart items */
         }
 
         .cart-header {
@@ -60,7 +72,15 @@
         .checkout-btn:hover {
             background-color: #45a049;
         }
+
+        /* Prevent body scrolling */
+        .no-scroll {
+            overflow: hidden;
+        }
     </style>
+
+    <!-- Dim Background -->
+    <div id="dim-background" class="dim-background" style="display: none;" onclick="toggleCart()"></div>
 
     <div class="cart-header">
         <h2>Shopping Cart</h2>
@@ -76,14 +96,24 @@
 
     <script>
         const db = firebase.firestore();
-        const authenticatedUserId = "REPLACE_WITH_AUTHENTICATED_USER_ID"; // Replace with dynamic user ID from auth state
+        let authenticatedUserId = "REPLACE_WITH_AUTHENTICATED_USER_ID"; // Replace with dynamic user ID from auth state
 
         function toggleCart() {
             const cartPopup = document.getElementById('cart-popup');
-            cartPopup.style.display = (cartPopup.style.display === 'none' || cartPopup.style.display === '') ? 'block' : 'none';
+            const dimBackground = document.getElementById('dim-background');
+            const body = document.body;
+            const isCartVisible = cartPopup.style.display === 'block';
 
-            if (cartPopup.style.display === 'block') {
-                fetchCartItems();
+            // Toggle cart visibility
+            cartPopup.style.display = isCartVisible ? 'none' : 'block';
+            dimBackground.style.display = isCartVisible ? 'none' : 'block';
+
+            // Add or remove no-scroll class to body
+            if (isCartVisible) {
+                body.classList.remove('no-scroll');
+            } else {
+                body.classList.add('no-scroll');
+                fetchCartItems(); // Fetch items when opening cart
             }
         }
 

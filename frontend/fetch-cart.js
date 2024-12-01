@@ -21,3 +21,4 @@ function loadCart() {
 window.onload = function () {
     loadCart();
 };
+

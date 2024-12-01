@@ -7,6 +7,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     background-color: #f9f9f9;
+    overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 header {
@@ -19,6 +20,8 @@ main {
     flex: 1;
     padding: 20px;
     margin-top: 80px; /* Adjust this value to match your header height */
+    position: relative;
+    z-index: 1;
 }
 
 main h1 {
@@ -32,7 +35,7 @@ footer {
     width: 100%;
     position: relative;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
 }
 
 /* Restaurants Section */
@@ -88,4 +91,31 @@ footer {
     margin: 5px 0 15px;
     color: #666;
     font-size: 14px;
+}
+
+/* Cart Popup Fixes */
+#cart-popup {
+    position: fixed;
+    top: 70px; /* Adjusted top value to place it below the header */
+    right: 0;
+    height: calc(100% - 70px); /* Adjust height to avoid overlapping footer */
+    width: 30%;
+    background-color: #fff;
+    box-shadow: -4px 0px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000; /* Ensure it's above other elements */
+    padding: 16px;
+    overflow-y: auto; /* Enable scrolling for cart items */
+    display: none;
+}
+
+/* Dim Background to Hide Other Elements */
+#dim-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    z-index: 999; /* Ensure it's below the cart */
+    display: none;
 }
